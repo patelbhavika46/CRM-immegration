@@ -27,7 +27,7 @@ function AddApplicantModal({ clientId, onClose }: { clientId: number; onClose: (
   });
 
   const onSubmit: SubmitHandler<NewApplicantFormValues> = async (values) => {
-    await addApplicant.mutateAsync(values as Record<string, unknown>);
+    await addApplicant.mutateAsync(values as unknown as Record<string, unknown>);
     onClose();
   };
 
