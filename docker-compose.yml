@@ -1,0 +1,94 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crm_backend
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend/app:/var/www/html/app
+      - ./backend/config/auth.php:/var/www/html/config/auth.php
+      - ./backend/config/cors.php:/var/www/html/config/cors.php
+      - ./backend/database:/var/www/html/database
+      - ./backend/routes:/var/www/html/routes
+      - ./backend/storage:/var/www/html/storage
+      - ./backend/tests:/var/www/html/tests
+      - ./backend/.env:/var/www/html/.env
+      - backend_vendor:/var/www/html/vendor
+    environment:
+      - APP_ENV=local
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - crm_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crm_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - crm_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: crm_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: crm_db
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - crm_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: crm_redis
+    restart: unless-stopped
+    command: redis-server --requirepass redis_secret
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - crm_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: crm_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio_user
+      MINIO_ROOT_PASSWORD: minio_secret
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - crm_network
+
+volumes:
+  backend_vendor:
+  mysql_data:
+  redis_data:
+  minio_data:
+
+networks:
+  crm_network:
+    driver: bridge

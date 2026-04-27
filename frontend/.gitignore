@@ -1,0 +1,16 @@
+/node_modules/
+/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env overrides
+.env.local
+.env.*.local

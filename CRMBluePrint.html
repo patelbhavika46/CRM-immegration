@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CRM Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate Professional -->
+    <!-- Application Structure Plan: The SPA is designed with a fixed sidebar for primary navigation, mirroring a real CRM's layout. This allows users to instantly jump between modules (Leads, Contacts, etc.). The main content area dynamically displays the detailed wireframes for the selected module. This structure was chosen to transform the linear document into a non-linear, interactive experience, enhancing usability and making the complex information digestible by breaking it into logical, user-selectable sections. Key interactions include sidebar navigation to switch views and hover/click effects, with live charts on the Dashboard and Reporting pages to make the wireframes more tangible. -->
+    <!-- Visualization & Content Choices: Report Info (e.g., Dashboard metrics) -> Goal (Inform/Compare) -> Viz (Chart.js Doughnut/Bar chart) -> Interaction (Tooltips on hover) -> Justification (Provides a live, dynamic feel to the static wireframe concept). Report Info (ASCII wireframes) -> Goal (Organize/Inform) -> Presentation (Styled HTML/CSS divs) -> Interaction (None, static visual) -> Justification (Recreates the wireframe's structure faithfully without using forbidden SVG/image files, providing a clear visual representation of layout). Report Info (Lead Conversion Process) -> Goal (Organize) -> Presentation (HTML/CSS flexbox with arrows) -> Justification (Visually represents a flow without needing a complex diagramming library). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mono-font {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link.active {
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 600;
+        }
+        .sidebar-link:not(.active):hover {
+            background-color: #eef2ff;
+            color: #312e81;
+        }
+        .wireframe-box {
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .wireframe-element {
+            border: 1px dashed #9ca3af;
+            background-color: #ffffff;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex-shrink-0">
+            <div class="p-4 border-b border-slate-200">
+                <h1 class="text-xl font-bold text-slate-900">CRM Blueprint</h1>
+                <p class="text-sm text-slate-500">Interactive Wireframes</p>
+            </div>
+            <nav id="sidebar-nav" class="p-2 flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible">
+                <a href="#dashboard" data-page="dashboard" class="sidebar-link active block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Dashboard & Home</a>
+                <a href="#user-management" data-page="user-management" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">User Management</a>
+                <a href="#lead-management" data-page="lead-management" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Lead Management</a>
+                <a href="#contact-management" data-page="contact-management" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Contact Management</a>
+                <a href="#account-management" data-page="account-management" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Account Management</a>
+                <a href="#opportunity-management" data-page="opportunity-management" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Opportunity Management</a>
+                <a href="#activity-management" data-page="activity-management" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Activity Management</a>
+                <a href="#reporting" data-page="reporting" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Reporting & Analytics</a>
+                <a href="#integrations" data-page="integrations" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">Integrations</a>
+                <a href="#system-wide" data-page="system-wide" class="sidebar-link block whitespace-nowrap text-sm font-medium text-slate-700 py-2 px-3 rounded-md">System-Wide Elements</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <div id="dashboard-content" class="page-content">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Dashboard & Home Screen</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">This section represents the central landing page for a CRM user. The dashboard's purpose is to provide a high-level, at-a-glance overview of key metrics, pending activities, and sales progress. It aggregates the most important information from other modules into digestible widgets, allowing users to quickly assess their priorities and performance without navigating through multiple screens. The wireframes below are brought to life with sample charts to demonstrate how data would be visualized.</p>
+
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.2.1 Main Dashboard</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-DASH-001</p>
+                        <p class="mb-4 text-slate-600">Provides a high-level overview of key CRM metrics, recent activities, and pending tasks for the logged-in user.</p>
+                        
+                        <div class="wire-box p-4 rounded-lg bg-slate-50 border">
+                            <h4 class="font-semibold text-lg mb-4 text-slate-800">Visual Representation</h4>
+                            <div class="border rounded-lg p-6 bg-white shadow-inner">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h2 class="text-2xl font-bold">Dashboard</h2>
+                                    <span class="text-slate-500">Welcome, John!</span>
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="wireframe-box">
+                                        <h5 class="font-semibold mb-2">Sales Pipeline Summary</h5>
+                                        <div class="chart-container">
+                                            <canvas id="pipelineChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="wireframe-box">
+                                        <h5 class="font-semibold mb-2">Recent Activities</h5>
+                                        <ul class="space-y-2 text-sm">
+                                            <li class="p-2 bg-slate-100 rounded">Call with Acme Corp</li>
+                                            <li class="p-2 bg-slate-100 rounded">Email to Jane Smith</li>
+                                            <li class="p-2 bg-slate-100 rounded">Meeting with XYZ Inc.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="wireframe-box">
+                                        <h5 class="font-semibold mb-2">Upcoming Tasks</h5>
+                                        <ul class="space-y-2 text-sm">
+                                            <li class="p-2 bg-slate-100 rounded">Follow up with John Doe (Today)</li>
+                                            <li class="p-2 bg-slate-100 rounded">Prepare proposal for PQR (Tomorrow)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="wireframe-box">
+                                        <h5 class="font-semibold mb-2">Lead Source Breakdown</h5>
+                                        <div class="chart-container">
+                                            <canvas id="leadSourceChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="user-management-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">User Management & Authentication</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">This section outlines the critical flows for user access and control. It includes how users log in to the system and how they can manage their own profile information. A secure and intuitive authentication and user management system is the foundation of any multi-user application, ensuring data privacy and a personalized user experience.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.1.1 Login Page</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-AUTH-001</p>
+                        <p class="mb-4 text-slate-600">Allows users to securely access the CRM system.</p>
+                        <div class="wireframe-box text-center max-w-md mx-auto">
+                            <div class="wireframe-element text-lg font-bold mb-6">[CRM Logo]</div>
+                            <h4 class="text-xl font-semibold mb-4">Login to CRM</h4>
+                            <div class="space-y-4 text-left">
+                                <div class="wireframe-element">Username/Email Input Field</div>
+                                <div class="wireframe-element">Password Input Field</div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="wireframe-element">[ ] Remember Me</span>
+                                    <span class="wireframe-element text-indigo-600">Forgot Password?</span>
+                                </div>
+                                <div class="wireframe-element bg-indigo-600 text-white text-center font-bold">Login Button</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.1.2 User Profile Management</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-AUTH-002</p>
+                        <p class="mb-4 text-slate-600">Allows authenticated users to view and update their personal information and preferences.</p>
+                        <div class="wireframe-box max-w-2xl mx-auto">
+                           <div class="wireframe-element mb-4 flex justify-between items-center"><span>Header: Logo | Global Search</span><span>[User ▼]</span></div>
+                           <div class="flex">
+                               <div class="w-1/4 wireframe-element mr-4">Sidebar...</div>
+                               <div class="flex-1 space-y-4">
+                                   <h4 class="text-xl font-semibold">My Profile</h4>
+                                   <div class="flex items-center space-x-4">
+                                       <div class="w-16 h-16 rounded-full wireframe-element flex items-center justify-center">Avatar</div>
+                                       <div class="w-full space-y-2">
+                                           <div class="wireframe-element">Name: John Doe</div>
+                                           <div class="wireframe-element">Email: john.doe@example.com</div>
+                                       </div>
+                                   </div>
+                                   <div class="wireframe-element">Phone: +1 (555) 123-4567</div>
+                                   <div class="wireframe-element">Role: Sales Representative</div>
+                                   <div class="wireframe-element w-1/2">Change Password Button</div>
+                                   <h5 class="font-semibold pt-2">Notification Settings</h5>
+                                   <div class="wireframe-element">[ ] Email Notifications</div>
+                                   <div class="wireframe-element">[ ] In-App Notifications</div>
+                                   <div class="flex space-x-2 pt-2">
+                                       <div class="wireframe-element bg-indigo-600 text-white font-bold">Save Changes Button</div>
+                                       <div class="wireframe-element">Cancel</div>
+                                   </div>
+                               </div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lead-management-content" class="page-content hidden">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Lead Management</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">Lead Management is the starting point of the sales process. This module is designed to capture, track, and manage potential customers (leads) until they are qualified. The flow covers viewing all leads in a filterable list, adding or editing lead details through a form, viewing a comprehensive 360-degree profile of a single lead, and finally, converting a qualified lead into an account, contact, and potential opportunity.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.3.1 Lead List View</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-LEAD-001</p>
+                        <p class="mb-4 text-slate-600">Displays a comprehensive list of all leads, with robust filtering, sorting, and search capabilities.</p>
+                        <div class="wireframe-box w-full">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xl font-semibold">Leads</h4>
+                                <div class="wireframe-element bg-indigo-600 text-white font-bold">Add New Lead</div>
+                            </div>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="wireframe-element flex-grow">Search Leads...</div>
+                                <div class="wireframe-element">Filter: Status ▼</div>
+                                <div class="wireframe-element">Filter: Source ▼</div>
+                                <div class="wireframe-element">Filter: Owner ▼</div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full wireframe-element text-left text-sm">
+                                    <thead>
+                                        <tr class="border-b-2 border-dashed">
+                                            <th class="p-2">[ ]</th><th class="p-2">Lead Name</th><th class="p-2">Company</th><th class="p-2">Status</th><th class="p-2">Owner</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">John Doe</td><td class="p-2">ABC Corp</td><td class="p-2">New</td><td class="p-2">Sales1</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Jane Smith</td><td class="p-2">XYZ Inc.</td><td class="p-2">Qualified</td><td class="p-2">Sales2</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.3.4 Lead Conversion Process</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-LEAD-004</p>
+                        <p class="mb-4 text-slate-600">A guided workflow for converting a qualified lead into an Account, Contact, and optionally an Opportunity.</p>
+                         <div class="wireframe-box w-full">
+                            <h4 class="text-xl font-semibold mb-4">Convert Lead: John Doe</h4>
+                            <div class="flex items-center justify-center space-x-2 md:space-x-4 mb-6 text-sm md:text-base">
+                                <div class="wireframe-element bg-indigo-100 border-indigo-500 ring-2 ring-indigo-500">Step 1: Account</div>
+                                <div class="text-2xl font-light text-slate-400">→</div>
+                                <div class="wireframe-element">Step 2: Contact</div>
+                                <div class="text-2xl font-light text-slate-400">→</div>
+                                <div class="wireframe-element">Step 3: Opportunity</div>
+                            </div>
+                            <div class="border-t pt-4">
+                                <h5 class="font-semibold mb-2">Step 1: Create Account</h5>
+                                <div class="space-y-2">
+                                    <div class="wireframe-element">[x] Create New Account</div>
+                                    <div class="wireframe-element">[ ] Link to Existing Account</div>
+                                    <div class="wireframe-element mt-4">Account Name: ABC Corporation</div>
+                                    <div class="wireframe-element">Website: www.abccorp.com</div>
+                                </div>
+                                <div class="flex justify-end space-x-2 mt-6">
+                                    <div class="wireframe-element">Back</div>
+                                    <div class="wireframe-element bg-indigo-600 text-white">Next</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="contact-management-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">Applicant Management</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">For an immigration service business, 'Applicants' represent the individual people seeking immigration services, often associated with a primary 'Client' (Account) or managed as standalone individuals. This module focuses on maintaining detailed personal records, immigration-specific details (e.g., visa type, application ID), and communication history for each individual involved in a case. Effective applicant management ensures all necessary personal information is tracked for successful case processing.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.4.1 Applicant List View</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-CONT-001</p>
+                        <p class="mb-4 text-slate-600">Displays a list of all individual applicants, with filtering, sorting, and search capabilities specific to immigration applicants.</p>
+                        <div class="wireframe-box w-full">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xl font-semibold">Applicants</h4>
+                                <div class="wireframe-element bg-indigo-600 text-white font-bold">Add New Applicant</div>
+                            </div>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="wireframe-element flex-grow">Search Applicants...</div>
+                                <div class="wireframe-element">Filter: Visa Type ▼</div>
+                                <div class="wireframe-element">Filter: Associated Client ▼</div>
+                                <div class="wireframe-element">Filter: Status ▼</div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full wireframe-element text-left text-sm">
+                                    <thead>
+                                        <tr class="border-b-2 border-dashed">
+                                            <th class="p-2">[ ]</th><th class="p-2">Applicant Name</th><th class="p-2">Associated Client</th><th class="p-2">Visa Type</th><th class="p-2">Application ID</th><th class="p-2">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">John Smith</td><td class="p-2">Smith Family</td><td class="p-2">PR (EE)</td><td class="p-2">EE12345</td><td class="p-2">Active</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Maria Garcia</td><td class="p-2">N/A</td><td class="p-2">Study Permit</td><td class="p-2">SP67890</td><td class="p-2">Pending</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Emily Smith</td><td class="p-2">Smith Family</td><td class="p-2">Dependent</td><td class="p-2">EE12345-D1</td><td class="p-2">Active</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="flex justify-end space-x-2 mt-4 text-sm">
+                                <div class="wireframe-element"> &lt; Prev </div>
+                                <div class="wireframe-element"> 1 </div>
+                                <div class="wireframe-element"> 2 </div>
+                                <div class="wireframe-element"> Next &gt; </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.4.2 Applicant Detail Page</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-CONT-002</p>
+                        <p class="mb-4 text-slate-600">Shows all information about an individual applicant, including personal details, immigration specifics, associated clients/cases, and communication history.</p>
+                        <div class="wireframe-box w-full">
+                            <h4 class="text-xl font-semibold mb-4">Applicant: John Smith</h4>
+                            <div class="flex justify-end space-x-2 mb-4">
+                                <div class="wireframe-element">Edit</div>
+                                <div class="wireframe-element">Delete</div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="wireframe-box">
+                                    <h5 class="font-semibold mb-2">Personal Information</h5>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="wireframe-element">Full Name: John Smith</li>
+                                        <li class="wireframe-element">Date of Birth: 1985-05-20</li>
+                                        <li class="wireframe-element">Nationality: Indian</li>
+                                        <li class="wireframe-element">Email: john.smith@example.com</li>
+                                        <li class="wireframe-element">Phone: +91 98765 43210</li>
+                                        <li class="wireframe-element">Current Address: 123 Main St, Mumbai, India</li>
+                                    </ul>
+                                </div>
+                                <div class="wireframe-box">
+                                    <h5 class="font-semibold mb-2">Immigration Details</h5>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="wireframe-element">Visa Type: Permanent Resident (Express Entry)</li>
+                                        <li class="wireframe-element">Application ID: EE12345</li>
+                                        <li class="wireframe-element">Current Status: Awaiting Invitation to Apply (ITA)</li>
+                                        <li class="wireframe-element">Submission Date: 2024-03-01</li>
+                                        <li class="wireframe-element">Associated Client: [Smith Family]</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="border-t pt-6">
+                                <div class="flex space-x-4 mb-4">
+                                    <div class="wireframe-element bg-indigo-100 border-indigo-500 ring-2 ring-indigo-500">Communications</div>
+                                    <div class="wireframe-element">Documents</div>
+                                    <div class="wireframe-element">Tasks</div>
+                                    <div class="wireframe-element">Case History</div>
+                                </div>
+                                <div class="wireframe-box">
+                                    <h5 class="font-semibold mb-2">Communications History</h5>
+                                    <ul class="space-y-2 text-sm mb-4">
+                                        <li class="wireframe-element">Email sent: Request for ECA (2024-01-25)</li>
+                                        <li class="wireframe-element">Call logged: Discussed Express Entry points (2024-02-10)</li>
+                                    </ul>
+                                    <div class="flex space-x-2">
+                                        <div class="wireframe-element bg-indigo-600 text-white">Log Call</div>
+                                        <div class="wireframe-element bg-indigo-600 text-white">Send Email</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="account-management-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">Account Management</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">For an immigration service business, 'Accounts' represent the primary client entities—whether individuals, families, or corporate clients—for whom immigration services are being provided. This module serves as the central hub for managing all case-related information, associated family members or dependents, service history, and critical documents. A well-structured account record provides a comprehensive view of each client's immigration journey and service needs.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.5.1 Client List View</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-ACC-001</p>
+                        <p class="mb-4 text-slate-600">Displays a list of all clients, with filtering, sorting, and search capabilities specific to immigration cases.</p>
+                        <div class="wireframe-box w-full">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xl font-semibold">Clients</h4>
+                                <div class="wireframe-element bg-indigo-600 text-white font-bold">Add New Client</div>
+                            </div>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="wireframe-element flex-grow">Search Clients...</div>
+                                <div class="wireframe-element">Filter: Case Status ▼</div>
+                                <div class="wireframe-element">Filter: Service Type ▼</div>
+                                <div class="wireframe-element">Filter: Consultant ▼</div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full wireframe-element text-left text-sm">
+                                    <thead>
+                                        <tr class="border-b-2 border-dashed">
+                                            <th class="p-2">[ ]</th><th class="p-2">Client Name</th><th class="p-2">Primary Applicant</th><th class="p-2">Service Type</th><th class="p-2">Case Status</th><th class="p-2">Consultant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Smith Family</td><td class="p-2">John Smith</td><td class="p-2">PR Application</td><td class="p-2">In Progress</td><td class="p-2">Jane Doe</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Maria Garcia</td><td class="p-2">Maria Garcia</td><td class="p-2">Visa Extension</td><td class="p-2">Submitted</td><td class="p-2">John Lee</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Global Corp</td><td class="p-2">Sarah Chen</td><td class="p-2">Work Permit</td><td class="p-2">Approved</td><td class="p-2">Jane Doe</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="flex justify-end space-x-2 mt-4 text-sm">
+                                <div class="wireframe-element"> &lt; Prev </div>
+                                <div class="wireframe-element"> 1 </div>
+                                <div class="wireframe-element"> 2 </div>
+                                <div class="wireframe-element"> Next &gt; </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.5.2 Client Detail Page</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-ACC-002</p>
+                        <p class="mb-4 text-slate-600">Central hub for all information related to a client's immigration case, including associated family members, related cases, activities, and critical documents.</p>
+                        <div class="wireframe-box w-full">
+                            <h4 class="text-xl font-semibold mb-4">Client: Smith Family</h4>
+                            <div class="flex justify-end space-x-2 mb-4">
+                                <div class="wireframe-element">Edit</div>
+                                <div class="wireframe-element">Delete</div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="wireframe-box">
+                                    <h5 class="font-semibold mb-2">Client Information</h5>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="wireframe-element">Primary Applicant: John Smith</li>
+                                        <li class="wireframe-element">Service Type: PR Application (Express Entry)</li>
+                                        <li class="wireframe-element">Case Status: In Progress (Awaiting ITA)</li>
+                                        <li class="wireframe-element">Date Opened: 2024-01-15</li>
+                                        <li class="wireframe-element">Country of Origin: India</li>
+                                        <li class="wireframe-element">Country of Destination: Canada</li>
+                                        <li class="wireframe-element">Consultant Assigned: Jane Doe</li>
+                                    </ul>
+                                </div>
+                                <div class="wireframe-box">
+                                    <h5 class="font-semibold mb-2">Notes & Internal Comments</h5>
+                                    <div class="wireframe-element h-32 overflow-y-auto">
+                                        - Initial consultation completed. Client meets eligibility criteria. (2024-01-10)<br>
+                                        - ECA report received. (2024-02-20)<br>
+                                        - Profile created in Express Entry pool. (2024-03-01)<br>
+                                    </div>
+                                    <div class="wireframe-element mt-2">Add New Note...</div>
+                                </div>
+                            </div>
+
+                            <div class="border-t pt-6">
+                                <div class="flex space-x-4 mb-4">
+                                    <div class="wireframe-element bg-indigo-100 border-indigo-500 ring-2 ring-indigo-500">Family Members</div>
+                                    <div class="wireframe-element">Related Cases</div>
+                                    <div class="wireframe-element">Activities</div>
+                                    <div class="wireframe-element">Documents</div>
+                                    <div class="wireframe-element">Payments</div>
+                                </div>
+                                <div class="wireframe-box">
+                                    <h5 class="font-semibold mb-2">Family Members</h5>
+                                    <ul class="space-y-2 text-sm mb-4">
+                                        <li class="wireframe-element">Jane Smith (Spouse)</li>
+                                        <li class="wireframe-element">Emily Smith (Child, 8 years old)</li>
+                                    </ul>
+                                    <div class="wireframe-element bg-indigo-600 text-white">Add New Family Member</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="opportunity-management-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">Opportunity Management</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">This is the heart of the sales process, where potential deals are tracked and managed through the sales pipeline. This module allows sales teams to visualize their pipeline (often with a Kanban-style board), manage the stages of each deal, forecast revenue, and focus their efforts on closing sales. The goal is to provide clarity and control over the entire sales cycle.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.6.1 Opportunity Pipeline View</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-OPP-001</p>
+                        <p class="mb-4 text-slate-600">Displays all sales opportunities in a visual Kanban/Pipeline view, allowing for easy stage management.</p>
+                        <div class="wireframe-box w-full">
+                            <h4 class="text-xl font-semibold mb-4">Opportunities Pipeline</h4>
+                            <div class="flex space-x-4 overflow-x-auto p-2 bg-slate-100 rounded-lg">
+                                <div class="flex-shrink-0 w-64">
+                                    <h5 class="font-bold p-2">Prospecting</h5>
+                                    <div class="space-y-2">
+                                        <div class="wireframe-element">Opp A Card</div>
+                                        <div class="wireframe-element">Opp B Card</div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 w-64">
+                                    <h5 class="font-bold p-2">Qualification</h5>
+                                    <div class="space-y-2">
+                                        <div class="wireframe-element">Opp C Card</div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 w-64">
+                                    <h5 class="font-bold p-2">Proposal</h5>
+                                    <div class="space-y-2">
+                                        <div class="wireframe-element">Opp D Card</div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 w-64">
+                                    <h5 class="font-bold p-2">Negotiation</h5>
+                                </div>
+                                <div class="flex-shrink-0 w-64">
+                                    <h5 class="font-bold p-2">Closed Won</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="activity-management-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">Activity Management</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">In an immigration service business, 'Activities' are the crucial interactions and tasks that drive each client's case forward. This module helps consultants and case managers organize their daily work, track all communications (calls, emails, meetings), manage document requests, and schedule government appointments. It ensures that every step in the immigration process is meticulously recorded and followed up on, leading to efficient case progression and client satisfaction.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.7.1 Case Activity Log</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-ACT-001</p>
+                        <p class="mb-4 text-slate-600">Displays all scheduled and completed activities related to immigration cases, filterable by type, status, and associated client/applicant.</p>
+                        <div class="wireframe-box w-full">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xl font-semibold">Case Activity Log</h4>
+                                <div class="wireframe-element bg-indigo-600 text-white font-bold">Add New Activity</div>
+                            </div>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="wireframe-element flex-grow">Search Activities...</div>
+                                <div class="wireframe-element">Filter: Activity Type ▼</div>
+                                <div class="wireframe-element">Filter: Status ▼</div>
+                                <div class="wireframe-element">Filter: Due Date ▼</div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full wireframe-element text-left text-sm">
+                                    <thead>
+                                        <tr class="border-b-2 border-dashed">
+                                            <th class="p-2">[ ]</th><th class="p-2">Subject</th><th class="p-2">Type</th><th class="p-2">Related To</th><th class="p-2">Due Date</th><th class="p-2">Status</th><th class="p-2">Assigned To</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Follow up on ECA</td><td class="p-2">Client Call</td><td class="p-2">John Smith</td><td class="p-2">Today</td><td class="p-2">Pending</td><td class="p-2">Jane Doe</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Submit PR Application</td><td class="p-2">Gov. Submission</td><td class="p-2">Smith Family</td><td class="p-2">2025-07-25</td><td class="p-2">Scheduled</td><td class="p-2">John Lee</td></tr>
+                                        <tr class="border-b border-dashed"><td class="p-2">[ ]</td><td class="p-2">Review documents</td><td class="p-2">Internal Task</td><td class="p-2">Maria Garcia</td><td class="p-2">2025-07-20</td><td class="p-2">Pending</td><td class="p-2">Jane Doe</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="flex justify-end space-x-2 mt-4 text-sm">
+                                <div class="wireframe-element"> &lt; Prev </div>
+                                <div class="wireframe-element"> 1 </div>
+                                <div class="wireframe-element"> 2 </div>
+                                <div class="wireframe-element"> Next &gt; </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.7.2 Add New Activity / Edit Activity Form (Modal)</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-ACT-002</p>
+                        <p class="mb-4 text-slate-600">A modal form for scheduling a new immigration-related activity or editing an existing one, capturing essential details for case progression.</p>
+                        <div class="wireframe-box w-full max-w-xl mx-auto">
+                            <h4 class="text-xl font-semibold mb-4">Add/Edit Case Activity</h4>
+                            <div class="space-y-4">
+                                <div class="wireframe-element">Activity Type: [Client Call ▼]</div>
+                                <div class="wireframe-element">Subject: [Discuss ECA Report]</div>
+                                <div class="wireframe-element">Related To: [John Smith (Applicant) ▼]</div>
+                                <div class="wireframe-element">Due Date: [2025-07-18 ▼] Time: [14:00 ▼]</div>
+                                <div class="wireframe-element">Status: [Pending ▼]</div>
+                                <div class="wireframe-element">Application Stage: [Profile Creation ▼]</div>
+                                <div class="wireframe-element">Outcome/Notes: [Text area for detailed notes...]</div>
+                            </div>
+                            <div class="flex justify-end space-x-2 mt-6">
+                                <div class="wireframe-element">Cancel</div>
+                                <div class="wireframe-element bg-indigo-600 text-white font-bold">Save Activity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="reporting-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">Reporting & Analytics</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">The Reporting & Analytics module transforms raw CRM data into actionable insights. Its purpose is to allow users and managers to measure performance, identify trends, and make data-driven decisions. This involves providing pre-built reports for common metrics and, in advanced systems, a builder for creating custom reports. The wireframe below is visualized with a sample interactive chart to show how data would be presented.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.8.2 Individual Report View</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-REP-002</p>
+                        <p class="mb-4 text-slate-600">Displays the data for a specific report in both tabular and graphical formats, with options to filter and export.</p>
+                         <div class="wireframe-box w-full">
+                            <h4 class="text-xl font-semibold mb-2">Sales Performance by Rep</h4>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="wireframe-element">Date Range: Last 30 Days ▼</div>
+                                <div class="wireframe-element">Filter: All Sales Reps ▼</div>
+                                <div class="ml-auto wireframe-element">Export ▼</div>
+                            </div>
+                            <div class="wireframe-box bg-white">
+                                 <div class="chart-container h-96">
+                                    <canvas id="salesReportChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="integrations-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">Integrations</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">For an immigration service business, the 'Integrations' module is vital for connecting the CRM with external systems that streamline operations and enhance client service. This includes direct links to government immigration portals for application submissions, payment gateways for secure transactions, and document management solutions for efficient storage and retrieval of sensitive client files. Seamless integrations reduce manual effort, minimize errors, and accelerate the immigration process.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">3.9.1 Integration Settings Page</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-INT-001</p>
+                        <p class="mb-4 text-slate-600">Allows users or administrators to configure and manage integrations with external systems crucial for immigration services.</p>
+                        <div class="wireframe-box w-full max-w-2xl mx-auto">
+                            <h4 class="text-xl font-semibold mb-4">Integrations</h4>
+                            <div class="space-y-4">
+                                <div class="wireframe-box bg-white">
+                                    <h5 class="font-semibold mb-1">Government Portal (e.g., IRCC)</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Automate application submissions and status checks.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-green-600 font-medium">Status: Connected</span>
+                                        <div class="flex space-x-2">
+                                            <div class="wireframe-element">Disconnect</div>
+                                            <div class="wireframe-element bg-indigo-600 text-white">Configure</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wireframe-box bg-white">
+                                    <h5 class="font-semibold mb-1">Payment Gateway (e.g., Stripe)</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Process client payments securely.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-red-600 font-medium">Status: Not Connected</span>
+                                        <div class="wireframe-element bg-indigo-600 text-white">Connect</div>
+                                    </div>
+                                </div>
+                                <div class="wireframe-box bg-white">
+                                    <h5 class="font-semibold mb-1">Document Management (e.g., Dropbox)</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Sync and manage client documents.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-orange-600 font-medium">Status: Error</span>
+                                        <div class="flex space-x-2">
+                                            <div class="wireframe-element">Reconnect</div>
+                                            <div class="wireframe-element bg-indigo-600 text-white">Configure</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wireframe-box bg-white">
+                                    <h5 class="font-semibold mb-1">Communication Platform (e.g., Twilio)</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Send automated SMS updates to clients.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-green-600 font-medium">Status: Connected</span>
+                                        <div class="wireframe-element bg-indigo-600 text-white">Configure</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="system-wide-content" class="page-content hidden">
+                 <h2 class="text-3xl font-bold text-slate-900 mb-2">System-Wide Elements</h2>
+                <p class="mb-6 text-slate-600 max-w-4xl">This section details UI components and interactions that are consistently available throughout the entire application. These global elements, such as search, notifications, and modals, ensure a predictable and efficient user experience. They provide users with essential tools and feedback mechanisms regardless of which module they are currently working in, unifying the application's design and functionality. For an immigration service CRM, these elements are tailored to quickly access client information, receive case updates, and manage critical actions.</p>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">4.1 Global Search</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-SYS-001</p>
+                        <p class="mb-4 text-slate-600">A search bar in the header that allows users to quickly find records across all CRM modules, prioritizing immigration-specific entities.</p>
+                        <div class="wireframe-box text-center max-w-md mx-auto">
+                            <div class="wireframe-element mb-4 flex justify-between items-center"><span>Header: Logo</span> <span class="flex-grow mx-4"> [Global Search...] </span> <span>[User Profile]</span></div>
+                            <div class="wireframe-box bg-white p-4 text-left">
+                                <h5 class="font-semibold mb-2">Search Results: "Smith"</h5>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="wireframe-element"><strong>Clients:</strong> Smith Family</li>
+                                    <li class="wireframe-element"><strong>Applicants:</strong> John Smith, Emily Smith</li>
+                                    <li class="wireframe-element"><strong>Cases:</strong> PR Application - Smith Family</li>
+                                    <li class="wireframe-element"><strong>Documents:</strong> John Smith Passport Copy</li>
+                                </ul>
+                                <div class="wireframe-element text-indigo-600 mt-4 text-center">View All Results</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">4.2 Notifications</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-SYS-002</p>
+                        <p class="mb-4 text-slate-600">In-app notifications for important immigration-related events, accessible via a bell icon in the header.</p>
+                        <div class="wireframe-box text-center max-w-md mx-auto">
+                            <div class="wireframe-element mb-4 flex justify-between items-center"><span>Header: Logo | Global Search</span> <span class="font-bold text-lg">🔔(3)</span> <span>| User Profile</span></div>
+                            <div class="wireframe-box bg-white p-4 text-left">
+                                <h5 class="font-semibold mb-2">Notifications</h5>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="wireframe-element">New document uploaded for Smith Family (5 min ago)</li>
+                                    <li class="wireframe-element">Visa interview scheduled for Maria Garcia (1 hour ago)</li>
+                                    <li class="wireframe-element">Case status updated for Global Corp (Yesterday)</li>
+                                </ul>
+                                <div class="wireframe-element text-indigo-600 mt-4 text-center">Mark All As Read</div>
+                                <div class="wireframe-element text-indigo-600 mt-2 text-center">View All Notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">4.3 Modals / Pop-ups</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-SYS-003</p>
+                        <p class="mb-4 text-slate-600">Standardized modal patterns for confirmations, quick actions, or detailed input that don't require a full page navigation, adapted for immigration contexts.</p>
+                        <div class="wireframe-box w-full max-w-md mx-auto h-64 flex items-center justify-center relative">
+                            <div class="absolute inset-0 bg-slate-200 opacity-75 rounded-lg"></div>
+                            <div class="wireframe-box bg-white p-6 rounded-lg shadow-xl z-10 w-11/12">
+                                <h4 class="text-xl font-semibold mb-4">Confirm Case Closure <span class="float-right text-slate-400">X</span></h4>
+                                <p class="mb-6 text-slate-600">Are you sure you want to close this case? This action will mark all pending activities as complete.</p>
+                                <div class="flex justify-end space-x-2">
+                                    <div class="wireframe-element">Cancel</div>
+                                    <div class="wireframe-element bg-red-600 text-white font-bold">Close Case</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold mb-1">4.4 Error & Success Messages</h3>
+                        <p class="text-sm text-slate-500 mb-4 mono-font">ID: CRM-SYS-004</p>
+                        <p class="mb-4 text-slate-600">Consistent display of system feedback, including success, error, warning, and informational messages, tailored for immigration process updates.</p>
+                        <div class="wireframe-box w-full max-w-md mx-auto space-y-4">
+                            <div class="wireframe-element bg-green-100 border-green-500 text-green-800 p-3 rounded-md flex items-center justify-between">
+                                <span>✔ Document uploaded successfully!</span> <span class="font-bold">X</span>
+                            </div>
+                            <div class="wireframe-element bg-red-100 border-red-500 text-red-800 p-3 rounded-md flex items-center justify-between">
+                                <span>✖ Application submission failed. Please check details.</span> <span class="font-bold">X</span>
+                            </div>
+                            <div class="wireframe-element bg-yellow-100 border-yellow-500 text-yellow-800 p-3 rounded-md flex items-center justify-between">
+                                <span>⚠ Pending documents for John Smith.</span> <span class="font-bold">X</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const navLinks = document.querySelectorAll('.sidebar-link');
+    const pages = document.querySelectorAll('.page-content');
+
+    function showPage(pageId) {
+        pages.forEach(page => {
+            if (page.id === `${pageId}-content`) {
+                page.classList.remove('hidden');
+            } else {
+                page.classList.add('hidden');
+            }
+        });
+
+        navLinks.forEach(link => {
+            if (link.dataset.page === pageId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+        window.scrollTo(0, 0);
+    }
+    
+    document.getElementById('sidebar-nav').addEventListener('click', function(e) {
+        e.preventDefault();
+        const link = e.target.closest('.sidebar-link');
+        if (link && link.dataset.page) {
+            showPage(link.dataset.page);
+            if (window.history.pushState) {
+                window.history.pushState(null, null, `#${link.dataset.page}`);
+            } else {
+                window.location.hash = link.dataset.page;
+            }
+        }
+    });
+
+    function handleHashChange() {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            showPage(hash);
+        } else {
+            showPage('dashboard');
+        }
+    }
+    
+    window.addEventListener('hashchange', handleHashChange);
+    
+    handleHashChange();
+
+    const pipelineCtx = document.getElementById('pipelineChart');
+    if(pipelineCtx) {
+        new Chart(pipelineCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won'],
+                datasets: [{
+                    label: 'Opportunities by Stage',
+                    data: [12, 19, 8, 5, 3],
+                    backgroundColor: ['#a5b4fc', '#818cf8', '#6366f1', '#4f46e5', '#312e81'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Opportunities by Stage'
+                    }
+                }
+            }
+        });
+    }
+
+    const leadSourceCtx = document.getElementById('leadSourceChart');
+    if(leadSourceCtx) {
+        new Chart(leadSourceCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Web', 'Referral', 'Cold Call', 'Event'],
+                datasets: [{
+                    label: 'Lead Source',
+                    data: [45, 25, 15, 15],
+                    backgroundColor: ['#6366f1', '#a5b4fc', '#c7d2fe', '#e0e7ff'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                     title: {
+                        display: true,
+                        text: 'Lead Source Breakdown'
+                    }
+                }
+            }
+        });
+    }
+
+    const salesReportCtx = document.getElementById('salesReportChart');
+    if (salesReportCtx) {
+        new Chart(salesReportCtx, {
+            type: 'bar',
+            data: {
+                labels: ['John Doe', 'Jane Smith', 'Sam Wilson', 'Lisa Ray', 'Mike Chen'],
+                datasets: [{
+                    label: 'Closed Won ($)',
+                    data: [120000, 95000, 78000, 110000, 65000],
+                    backgroundColor: '#4f46e5',
+                    borderColor: '#312e81',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                             callback: function(value, index, values) {
+                                return '$' + value / 1000 + 'k';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                     legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Sales Performance by Rep (Last 30 Days)'
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
